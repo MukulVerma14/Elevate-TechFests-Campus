@@ -40,9 +40,9 @@ const RegisterPage = () => {
     setLoading(true);
     try {
       const response = await registerUser({ name, email, password, role });
-      const { token, id, role: userRole } = response.data;
+      const { token, userId, role: userRole } = response.data;
       
-      login(token, id, userRole);
+      login(token, userId, userRole);
       setToast({ message: 'Registration successful!', type: 'success' });
 
       setTimeout(() => {

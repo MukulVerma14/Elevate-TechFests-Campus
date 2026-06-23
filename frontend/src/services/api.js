@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: '',
 });
 
 // Request interceptor: attach Authorization header
@@ -51,7 +51,8 @@ export const browseProgrammes = (filters) =>
 export const expressInterest = (progId) => 
   api.post(`/api/corporate/interest/${progId}`, {});
 export const getMyShortlist = () => api.get('/api/corporate/interests');
-
+export const withdrawInterest = (progId) =>
+    api.delete(`/api/corporate/interest/${progId}`);
 // Admin APIs
 export const getAdminStats = () => api.get('/api/admin/stats');
 export const getAdminProgrammes = () => api.get('/api/admin/programmes');

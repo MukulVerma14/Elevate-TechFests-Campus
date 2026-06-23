@@ -38,6 +38,13 @@ public class CorporateController {
         return ResponseEntity.ok(matchmakingService.getCorporateInterests(userId));
     }
 
+    @DeleteMapping("/interest/{progId}")
+    public ResponseEntity<Void> withdrawInterest(Principal principal, @PathVariable Long progId) {
+        Long userId = extractUserId(principal);
+        matchmakingService.withdrawInterest(userId, progId);
+        return ResponseEntity.noContent().build();
+    }
+
     private Long extractUserId(Principal principal) {
         return Long.parseLong(principal.getName());
     }

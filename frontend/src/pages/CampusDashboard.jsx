@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Navbar from '../components/Navbar';
 import ProgrammeCard from '../components/ProgrammeCard';
 import Modal from '../components/Modal';
@@ -50,6 +50,10 @@ const CampusDashboard = () => {
     campusDeliverable: '',
     corporateDeliverable: ''
   });
+
+  const handleToastClose = useCallback(() => {
+      setToast({ message: '', type: 'success' });
+  }, []);
 
   const fetchProgrammes = async () => {
     setLoading(true);
@@ -704,7 +708,7 @@ const CampusDashboard = () => {
         </form>
       </Modal>
 
-      <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
+      <Toast message={toast.message} type={toast.type} onClose={handleToastClose} />
 
       <footer className="bg-primary text-gray-400 py-6 border-t border-primary-dark">
         <div className="max-w-7xl mx-auto text-center text-xs font-semibold">

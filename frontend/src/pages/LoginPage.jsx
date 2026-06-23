@@ -24,9 +24,9 @@ const LoginPage = () => {
     setLoading(true);
     try {
       const response = await loginUser({ email, password });
-      const { token, id, role } = response.data;
+      const { token, userId, role } = response.data;
       
-      login(token, id, role);
+      login(token, userId, role);
 
       setToast({ message: 'Login successful!', type: 'success' });
 

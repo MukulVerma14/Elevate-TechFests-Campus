@@ -123,4 +123,20 @@ public class MatchmakingService {
                                 corporateEmail, companyName,
                                 eoi.getProgramme().getTitle());
         }
+
+        @Transactional
+        public void withdrawInterest(Long userId, Long progId) {
+            CorporateProfile corporate = corporateProfileRepository.findByUserId(userId)
+                    .orElseThrow(() -> new RuntimeException("Corporate profile not found"));
+
+            ExpressionOfInterest eoi = eoiRepository
+                    .findByCorporateIdAndProgrammeId(corporate.getId(), progId)
+                    .orElseThrow(() -> new RuntimeException("No interest found for this programme"));
+
+            if (eoi.getStatus() == EoiStatus.CLOSED) {
+                throw new RuntimeException("Cannot withdraw a closed deal");
+            }
+
+            eoiRepository.delete(eoi);
+        }
 }

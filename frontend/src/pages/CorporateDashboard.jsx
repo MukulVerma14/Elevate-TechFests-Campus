@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import ProgrammeCard from '../components/ProgrammeCard';
 import Toast from '../components/Toast';
-import { browseProgrammes, expressInterest, getMyShortlist } from '../services/api';
+import { browseProgrammes, expressInterest, withdrawInterest, getMyShortlist } from '../services/api';
+import { useCallback } from 'react';
 
 const CorporateDashboard = () => {
   const [activeTab, setActiveTab] = useState('browse');
@@ -17,6 +18,12 @@ const CorporateDashboard = () => {
     location: '',
     type: ''
   });
+
+  const [expressedProgIds, setExpressedProgIds] = useState(new Set());
+
+  const handleToastClose = useCallback(() => {
+      setToast({ message: '', type: 'success' });
+  }, []);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -45,41 +52,54 @@ const CorporateDashboard = () => {
     }
   };
 
-  const fetchShortlist = async () => {
-    setLoading(true);
-    try {
-      const response = await getMyShortlist();
-      setShortlist(response.data);
-    } catch (err) {
-      setToast({ message: 'Failed to load shortlist.', type: 'error' });
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fetchShortlist = async (silent = false) => {
+        if (!silent) setLoading(true);
+        try {
+            const response = await getMyShortlist();
+            setShortlist(response.data);
+            const ids = new Set(response.data.map(eoi => eoi.programmeId));
+            setExpressedProgIds(ids);
+        } catch (err) {
+            setToast({ message: 'Failed to load shortlist.', type: 'error' });
+        } finally {
+            if (!silent) setLoading(false);
+        }
+    };
 
-  useEffect(() => {
-    if (activeTab === 'browse') {
-      fetchProgrammes();
-    } else {
-      fetchShortlist();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab]);
+    useEffect(() => {
+        // Always fetch shortlist on mount to know which programmes already have interest
+        fetchShortlist(true);
+    }, []);
 
-  const handleExpressInterest = async (progId) => {
-    setLoading(true);
-    try {
-      await expressInterest(progId);
-      setToast({ message: 'Interest expressed!', type: 'success' });
-      // Refresh browse list or update state
-      fetchProgrammes();
-    } catch (err) {
-      const errMsg = err.response?.data?.message || err.message || 'Already expressed interest.';
-      setToast({ message: errMsg, type: 'error' });
-    } finally {
-      setLoading(false);
-    }
-  };
+    useEffect(() => {
+        if (activeTab === 'browse') {
+            fetchProgrammes();
+        } else {
+            fetchShortlist();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeTab]);
+
+    const handleInterestToggle = async (progId) => {
+        try {
+            if (expressedProgIds.has(progId)) {
+                await withdrawInterest(progId);
+                setExpressedProgIds(prev => {
+                    const updated = new Set(prev);
+                    updated.delete(progId);
+                    return updated;
+                });
+                setToast({ message: 'Interest withdrawn.', type: 'success' });
+            } else {
+                await expressInterest(progId);
+                setExpressedProgIds(prev => new Set(prev).add(progId));
+                setToast({ message: 'Interest expressed!', type: 'success' });
+            }
+        } catch (err) {
+            const errMsg = err.response?.data?.message || err.message || 'Action failed.';
+            setToast({ message: errMsg, type: 'error' });
+        }
+    };
 
   const getStatusBadgeClass = (status) => {
     switch (status) {
@@ -203,12 +223,16 @@ const CorporateDashboard = () => {
                     key={prog.id}
                     programme={prog}
                     actions={
-                      <button
-                        onClick={() => handleExpressInterest(prog.id)}
-                        className="px-4 py-2 bg-accent hover:bg-accent-dark text-white rounded-lg text-xs font-bold transition shadow-sm"
-                      >
-                        Express Interest
-                      </button>
+                        <button
+                            onClick={() => handleInterestToggle(prog.id)}
+                            className={`px-4 py-2 rounded-lg text-xs font-bold transition shadow-sm text-white ${
+                                expressedProgIds.has(prog.id)
+                                    ? 'bg-red-500 hover:bg-red-600'
+                                    : 'bg-accent hover:bg-accent-dark'
+                            }`}
+                        >
+                            {expressedProgIds.has(prog.id) ? 'Withdraw Interest' : 'Express Interest'}
+                        </button>
                     }
                   />
                 ))}
@@ -261,7 +285,7 @@ const CorporateDashboard = () => {
         )}
       </main>
 
-      <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
+      <Toast message={toast.message} type={toast.type} onClose={handleToastClose} />
 
       <footer className="bg-primary text-gray-400 py-6 border-t border-primary-dark">
         <div className="max-w-7xl mx-auto text-center text-xs font-semibold">

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ExpressionOfInterestRepository extends JpaRepository<ExpressionOfInterest, Long> {
@@ -13,6 +14,8 @@ public interface ExpressionOfInterestRepository extends JpaRepository<Expression
 
     // For Campus: GET /api/campus/interests/{progId} (See who applied)
     List<ExpressionOfInterest> findByProgrammeId(Long programmeId);
+
+    Optional<ExpressionOfInterest> findByCorporateIdAndProgrammeId(Long corporateId, Long programmeId);
 
     // Check if a corporate already expressed interest to prevent duplicates
     boolean existsByCorporateIdAndProgrammeId(Long corporateId, Long programmeId);
