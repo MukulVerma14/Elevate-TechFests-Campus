@@ -1,12 +1,10 @@
 package com.example.ksep.dto;
 
-import java.time.LocalDateTime;
-
 public record DealClosureResponseDto(
         Long dealId,
-        Long programmeId,
+        Long eoiId,
         String programmeTitle,
-        String campusName,
         String corporateName,
-        LocalDateTime closedAt
+        String campusDeliverable,
+        String corporateDeliverable
 ) {}

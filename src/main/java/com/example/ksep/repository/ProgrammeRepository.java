@@ -11,20 +11,22 @@ import java.util.List;
 @Repository
 public interface ProgrammeRepository extends JpaRepository<Programme, Long> {
 
-    // For the Campus Dashboard: GET /api/campus/programmes
-    // Spring infers the SQL automatically: SELECT * FROM programmes WHERE campus_id = ?
-    List<Programme> findByCampusId(Long campusId);
+        // Used by CampusService to fetch a campus's own programmes
+        List<Programme> findByCampusId(Long campusId);
 
-    // For the Corporate Dashboard: GET /api/corporate/programmes
-    // Handles dynamic filtering. If a param is null, it ignores that filter.
-    @Query("SELECT p FROM Programme p WHERE " +
-            "(:domain IS NULL OR p.domain = :domain) AND " +
-            "(:location IS NULL OR p.location = :location) AND " +
-            "(:type IS NULL OR p.type = :type) AND " +
-            "p.status = 'ACTIVE'")
-    List<Programme> findAvailableProgrammes(
-            @Param("domain") String domain,
-            @Param("location") String location,
-            @Param("type") String type
-    );
+        // Used by MatchmakingService to browse the pool with optional filters
+        @Query("SELECT p FROM Programme p WHERE " +
+                        "p.status = 'ACTIVE' AND " +
+                        "(:domain IS NULL OR LOWER(p.domain) = LOWER(:domain)) AND " +
+                        "(:location IS NULL OR LOWER(p.location) = LOWER(:location)) AND " +
+                        "(:type IS NULL OR CAST(p.type AS string) = :type)")
+        List<Programme> findAvailableProgrammes(
+                        @Param("domain") String domain,
+                        @Param("location") String location,
+                        @Param("type") String type);
+
+        // Used by AdminService
+        @Query("SELECT COUNT(p) FROM Programme p WHERE p.status = 'ACTIVE'")
+        Long countActiveProgrammes();
+
 }

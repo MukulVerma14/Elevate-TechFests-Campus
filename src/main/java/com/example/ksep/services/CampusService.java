@@ -23,6 +23,7 @@ public class CampusService {
 
     private final ProgrammeRepository programmeRepository;
     private final CampusProfileRepository campusProfileRepository;
+    private final ExpressionOfInterestRepository expressionOfInterestRepository;
 
     @Transactional
     public ProgrammeResponseDto createProgramme(Long userId, ProgrammeRequestDto request) {
@@ -91,7 +92,7 @@ public class CampusService {
             throw new RuntimeException("Unauthorized to view interests for this programme");
         }
 
-        return ExpressionOfInterestRepository.findByProgrammeId(programmeId).stream()
+        return expressionOfInterestRepository.findByProgrammeId(programmeId).stream()
                 .map(eoi -> new EoiResponseDto(
                         eoi.getId(), eoi.getCorporate().getId(), eoi.getCorporate().getCompanyName(),
                         eoi.getProgramme().getId(), eoi.getProgramme().getTitle(), eoi.getStatus().name()

@@ -12,9 +12,7 @@ public interface ExpressionOfInterestRepository extends JpaRepository<Expression
     List<ExpressionOfInterest> findByCorporateId(Long corporateId);
 
     // For Campus: GET /api/campus/interests/{progId} (See who applied)
-    static List<ExpressionOfInterest> findByProgrammeId(Long programmeId) {
-        return null;
-    }
+    List<ExpressionOfInterest> findByProgrammeId(Long programmeId);
 
     // Check if a corporate already expressed interest to prevent duplicates
     boolean existsByCorporateIdAndProgrammeId(Long corporateId, Long programmeId);
