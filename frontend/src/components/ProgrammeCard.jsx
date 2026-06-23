@@ -1,5 +1,3 @@
-import React from 'react';
-
 const ProgrammeCard = ({ programme, actions }) => {
   const { title, type, domain, subDomain, location, status, startDate, scale } = programme;
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import ProgrammeCard from '../components/ProgrammeCard';
 import Toast from '../components/Toast';
@@ -63,6 +63,7 @@ const CorporateDashboard = () => {
     } else {
       fetchShortlist();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   const handleExpressInterest = async (progId) => {

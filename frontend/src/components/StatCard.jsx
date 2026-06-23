@@ -1,5 +1,3 @@
-import React from 'react';
-
 const StatCard = ({ title, value, color }) => {
   const getColorAccent = (color) => {
     switch (color) {
