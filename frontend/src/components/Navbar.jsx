@@ -10,11 +10,9 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <span className="text-2xl font-black text-primary tracking-wider hover:text-accent transition duration-200">
-                KSEP
-              </span>
+              <img src="/millionminds-logo.png" alt="Millionminds" className="h-10 w-auto object-contain" />
               <span className="text-xs font-bold bg-primary/10 text-primary px-2 py-0.5 rounded">
-                by Millionminds
+                ELEVATE
               </span>
             </Link>
           </div>
